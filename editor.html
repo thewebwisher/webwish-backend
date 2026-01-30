@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebWish Studio</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- 1. THE DESIGN DNA (Copy these values from Framer) --- */
+        :root {
+            /* COLORS */
+            --primary-color: #ff4d6d; /* Your Main Brand Color */
+            --bg-gradient: linear-gradient(135deg, #0f0c29, #302b63, #24243e); /* Fallback if image fails */
+            --glass-bg: rgba(255, 255, 255, 0.05); /* The "Glass" transparency */
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #ffffff;
+            --text-muted: #rgba(255, 255, 255, 0.6);
+
+            /* FONTS */
+            --font-main: 'Outfit', sans-serif;
+
+            /* SHAPES */
+            --radius-large: 24px;
+            --radius-small: 12px;
+        }
+
+        /* --- 2. GLOBAL AESTHETICS --- */
+        body {
+            margin: 0;
+            font-family: var(--font-main);
+            height: 100vh;
+            overflow: hidden;
+            color: var(--text-main);
+
+            /* BACKGROUND: Use the same background image as your Framer site here */
+            background: url('your-framer-background.jpg') no-repeat center center fixed;
+            background-size: cover;
+        }
+
+        /* --- 3. GLASSMORPHISM SIDEBAR --- */
+        .controls {
+            width: 380px;
+            height: 100%;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow-y: auto;
+
+            /* THE GLASS EFFECT */
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px); /* Blurs what's behind it */
+            -webkit-backdrop-filter: blur(20px);
+            border-right: 1px solid var(--glass-border);
+            box-shadow: 10px 0 30px rgba(0,0,0,0.2);
+        }
+
+        /* TYPOGRAPHY */
+        h2 {
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 5px;
+            background: linear-gradient(to right, #fff, #aaa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent; /* Makes text look metallic */
+        }
+
+        .back-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            transition: 0.3s;
+            display: flex; align-items: center; gap: 5px;
+        }
+        .back-link:hover { color: var(--primary-color); transform: translateX(-3px); }
+
+        /* --- 4. MODERN INPUTS --- */
+        .input-group label {
+            font-size: 11px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .input-group input, .input-group textarea {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.2); /* Dark glass input */
+            border: 1px solid var(--glass-border);
+            padding: 14px;
+            border-radius: var(--radius-small);
+            color: white;
+            font-family: var(--font-main);
+            font-size: 15px;
+            transition: 0.3s;
+            box-sizing: border-box;
+        }
+
+        .input-group input:focus, .input-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: rgba(0, 0, 0, 0.4);
+            box-shadow: 0 0 15px rgba(255, 77, 109, 0.2);
+        }
+
+        /* --- 5. THE "PRIMARY" BUTTON --- */
+        button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: var(--radius-large);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(255, 77, 109, 0.3);
+            margin-top: auto; /* Pushes button to bottom */
+        }
+        button:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(255, 77, 109, 0.5);
+        }
+
+        /* --- 6. PREVIEW AREA --- */
+        .preview-area {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .device-frame {
+            border: 8px solid #222;
+            box-shadow: 0 50px 100px rgba(0,0,0,0.5); /* Deep shadow for depth */
+        }
+
+        /* --- 7. SCROLLBAR (Make it invisible/sleek) --- */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+
+    </style>
+
+</head>
+<body>
+
+    <div class="controls">
+        <a href="index.html" class="back-link">← Back to Gallery</a>
+        <h2>🎨 Studio</h2>
+        <div id="dynamicControls"></div>
+        <button onclick="alert('Proceed to Pay ₹299')" style="background:#e63946; color:white; border:none; padding:15px; border-radius:5px; cursor:pointer; font-weight:bold; margin-top:auto;">Finalize & Buy</button>
+    </div>
+
+    <div class="preview-area">
+        <div class="device-frame">
+            <div class="swiper mySwiper">
+                <div class="swiper-wrapper" id="swiperWrapper"></div>
+                <div class="swiper-pagination"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+    <script>
+        // --- 1. EXPANDED TEMPLATE DATABASE ---
+        const templates = {
+            "val_classic": {
+                themeClass: "theme-valentine",
+                effect: "cube",
+                slides: [
+                    { type: "title", id: "s1", label: "Intro", defaultText: "My Love", anim: "animate__fadeInDown" },
+                    { type: "image", id: "s2", label: "Our Photo", defaultImg: "https://via.placeholder.com/300" },
+                    { type: "text",  id: "s3", label: "Message", defaultText: "Forever Yours", anim: "animate__zoomIn" }
+                ]
+            },
+            "val_modern": {
+                themeClass: "theme-dark",
+                effect: "cards",
+                slides: [
+                    { type: "title", id: "m1", label: "Headline", defaultText: "YOU + ME", anim: "animate__fadeIn" },
+                    { type: "text",  id: "m2", label: "Date", defaultText: "Since 2024", anim: "animate__fadeInUp" },
+                    { type: "image", id: "m3", label: "Photo", defaultImg: "https://via.placeholder.com/300/000/fff" }
+                ]
+            },
+            "bd_fun": {
+                themeClass: "theme-birthday",
+                effect: "flip",
+                slides: [
+                    { type: "title", id: "b1", label: "Intro", defaultText: "HAPPY B-DAY!", anim: "animate__bounceIn" },
+                    { type: "image", id: "b2", label: "Funny Photo", defaultImg: "https://via.placeholder.com/300" }
+                ]
+            }
+        };
+
+        let swiper;
+
+        // --- 2. ENGINE LOGIC ---
+        function loadTemplate(templateKey) {
+            // Check if template exists, if not load default
+            const data = templates[templateKey] || templates["val_classic"];
+
+            const wrapper = document.getElementById('swiperWrapper');
+            const controls = document.getElementById('dynamicControls');
+
+            wrapper.innerHTML = "";
+            controls.innerHTML = `<h3 style='color:#888'>Editing: Slide 1</h3>`;
+            if(swiper) swiper.destroy();
+
+            document.querySelector('.swiper').className = `swiper mySwiper ${data.themeClass}`;
+
+            data.slides.forEach((slide, index) => {
+                // Build Slides
+                let slideHTML = "";
+                if (slide.type === "title" || slide.type === "text") {
+                    slideHTML = `<div class="swiper-slide">
+                        <h1 id="disp-${slide.id}" class="animate__animated ${slide.anim}">${slide.defaultText}</h1>
+                    </div>`;
+                } else if (slide.type === "image") {
+                    slideHTML = `<div class="swiper-slide">
+                        <div class="img-wrapper"><img id="img-${slide.id}" src="${slide.defaultImg}"></div>
+                    </div>`;
+                }
+                wrapper.innerHTML += slideHTML;
+
+                // Build Inputs
+                let inputHTML = `<div class="input-group group-slide-${index}" style="display:${index===0?'block':'none'}">`;
+                if (slide.type === "title" || slide.type === "text") {
+                    inputHTML += `<label>${slide.label}</label><textarea oninput="document.getElementById('disp-${slide.id}').innerText = this.value">${slide.defaultText}</textarea>`;
+                } else if (slide.type === "image") {
+                    inputHTML += `<label>Upload ${slide.label}</label><input type="file" accept="image/*" onchange="updateImage('${slide.id}', this)"><label>Zoom</label><input type="range" min="0.5" max="3" step="0.1" value="1" oninput="zoomImage('${slide.id}', this.value)">`;
+                }
+                inputHTML += `</div>`;
+                controls.innerHTML += inputHTML;
+            });
+
+            initSwiper(data.effect);
+        }
+
+        function initSwiper(effectName) {
+            swiper = new Swiper(".mySwiper", {
+                effect: effectName,
+                grabCursor: true,
+                cardsEffect: { slideShadows: false },
+                pagination: { el: ".swiper-pagination" },
+                on: {
+                    slideChange: function () {
+                        document.querySelectorAll('.input-group').forEach(el => el.style.display = 'none');
+                        document.querySelectorAll(`.group-slide-${this.activeIndex}`).forEach(el => el.style.display = 'block');
+                        const header = document.querySelector('#dynamicControls h3');
+                        if(header) header.innerText = `Editing: Slide ${this.activeIndex + 1}`;
+                    }
+                }
+            });
+        }
+
+        function updateImage(id, input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) { document.getElementById(`img-${id}`).src = e.target.result; }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        function zoomImage(id, val) {
+            document.getElementById(`img-${id}`).style.transform = `translate(-50%, -50%) scale(${val})`;
+        }
+
+        // --- 3. AUTO-LOAD FROM URL ---
+        // This is the Magic Part
+        const urlParams = new URLSearchParams(window.location.search);
+        const templateID = urlParams.get('id'); // Gets the '?id=xyz' part
+        loadTemplate(templateID); // Loads that specific template
+
+    </script>
+</body>
+</html>
