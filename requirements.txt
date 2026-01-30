@@ -1,5 +1,4 @@
 Flask==3.0.0
-requests
-discord-webhook
+flask-cors
 gunicorn
-jinja2
+requests
