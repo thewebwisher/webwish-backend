@@ -1,48 +1,95 @@
 import os
-from flask import Flask, request, jsonify
+import uuid
+from flask import Flask, request, jsonify, render_template_string
 from flask_cors import CORS
 
-# --- CONFIGURATION ---
 app = Flask(__name__)
-CORS(app)  # This is CRITICAL. It allows your Framer/Netlify site to talk to this server.
+# Allow everyone to talk to us (CORS)
+CORS(app, resources={r"/*": {"origins": "*"}})
+
+# --- 1. MEMORY STORAGE (Temporary) ---
+# In a real startup, we use a Database (Day 5).
+# For now, we keep orders in the server's RAM.
+orders_db = {}
+
+# --- 2. HTML TEMPLATE (The Product) ---
+# This is the "Base Design" that gets filled with user data.
+VALENTINE_TEMPLATE = """
+<!DOCTYPE html>
+<html>
+<head>
+    <title>For {{ partner }}</title>
+    <style>
+        body { background: #ff9a9e; color: white; text-align: center; font-family: sans-serif; display: flex; flex-direction: column; justify-content: center; height: 100vh; margin: 0; }
+        h1 { font-size: 3rem; margin-bottom: 10px; }
+        p { font-size: 1.5rem; }
+        .card { background: rgba(255,255,255,0.2); padding: 40px; border-radius: 20px; display: inline-block; margin: 20px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>❤️ {{ partner }} ❤️</h1>
+        <p>{{ message }}</p>
+        <br>
+        <small>With love from, {{ user }}</small>
+    </div>
+</body>
+</html>
+"""
 
 
-# --- THE WELCOME MAT ---
 @app.route('/')
 def home():
-    return "✅ WebWish Factory is Online! The Engine is Purring."
+    return "✅ WebWish Factory is Online!"
 
 
-# --- THE ORDER RECEIVER ---
+# --- 3. CREATE WISH (The Input) ---
 @app.route('/create-wish', methods=['POST'])
 def create_wish():
     try:
-        # 1. Get Data from the Editor
         data = request.json
-        print(f"📦 New Order Received: {data}")
 
-        # 2. Extract Details (We will use these later for the build)
-        template_id = data.get('template_id')
-        partner_name = data.get('partner_name', 'Partner')
-        user_name = data.get('user_name', 'User')
+        # generate a unique ID (e.g., 'a1b2c3d4')
+        wish_id = str(uuid.uuid4())[:8]
 
-        # --- FUTURE LOGIC: GENERATE WEBSITE HERE ---
-        # For now, we just confirm we got it.
+        # Save to our "Database"
+        orders_db[wish_id] = {
+            "partner": data.get('partner_name', 'My Love'),
+            "user": data.get('user_name', 'Admirer'),
+            "message": data.get('message', 'Happy Valentine!')
+        }
 
-        # 3. Send Success Response
+        print(f"📦 Created Wish {wish_id} for {data.get('user_name')}")
+
+        # Return the unique link
         return jsonify({
             "status": "success",
-            "message": "Order Received!",
-            "redirect_url": "https://webwish.in/thank-you"  # We will change this later
+            "message": "Website Generated!",
+            "redirect_url": f"https://webwish-api.onrender.com/w/{wish_id}"
         })
 
     except Exception as e:
-        print(f"❌ Error: {e}")
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
-# --- START THE SERVER ---
+# --- 4. VIEW WISH (The Output) ---
+@app.route('/w/<wish_id>')
+def view_wish(wish_id):
+    # Find the order in our database
+    order = orders_db.get(wish_id)
+
+    if not order:
+        return "❌ Oops! This wish doesn't exist or has expired."
+
+    # Inject the data into the HTML
+    return render_template_string(
+        VALENTINE_TEMPLATE,
+        partner=order['partner'],
+        user=order['user'],
+        message=order['message']
+    )
+
+
 if __name__ == '__main__':
-    # This allows it to run on Render (port 10000) or Laptop (port 5000)
     port = int(os.environ.get("PORT", 10000))
     app.run(host='0.0.0.0', port=port)
